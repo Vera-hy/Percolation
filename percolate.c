@@ -214,12 +214,13 @@ int main(int argc, char *argv[])//test for Clion
 
   step = 1;
   nchange = 1;
+  int anchange = 1;
 
   //while (step <= maxstep)
-  while (nchange > 0)
+  while (anchange > 0)
     {
       nchange = 0;
-
+      anchange = 0;
       MPI_Issend(&old[M][1],N,MPI_INT,right,tag1,comm2d,&request1);
       MPI_Recv(&old[0][1],N,MPI_INT,left,tag1,comm2d,&status1);
       MPI_Wait(&request1,&status1);
@@ -278,7 +279,8 @@ int main(int argc, char *argv[])//test for Clion
 	       printf("percolate: number of changes on step %d is %d\n",
 		      step, nchange);
 	     }
-
+      MPI_Allreduce(&nchange,&anchange,1,MPI_INT,MPI_SUM,comm2d);
+     // printf("anchange = %d\n ",anchange);
       /*
        *  Copy back in preparation for next step, omitting halos
        */
@@ -290,6 +292,26 @@ int main(int argc, char *argv[])//test for Clion
 	         old[i][j] = new[i][j];
 	       }
 	     }
+
+      int smallmap_sum = 0;
+      int map_sum;
+      float map_average;
+      for (i=1; i<=M; i++)
+        {
+          for (j=1; j<=N; j++)
+          {
+             smallmap_sum += old[i][j];
+          }
+        }
+      MPI_Allreduce(&smallmap_sum,&map_sum,1,MPI_INT,MPI_SUM,comm2d);
+      map_average = map_sum / (L * L);
+
+      if( rank == 0) {
+          if (step % printfreq == 0) {
+              printf("percolate: the average of the map array on step %d "
+                     "is %f\n", step, map_average);
+          }
+      }
 
       step++;
     } 
