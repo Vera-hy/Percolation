@@ -209,13 +209,14 @@ int main(int argc, char *argv[])//test for Clion
     *  Update for a fixed number of iterations
     */
 
-  maxstep = 16*L;
+  //maxstep = 16*L;
   printfreq = 100;
 
   step = 1;
   nchange = 1;
 
-  while (step <= maxstep)
+  //while (step <= maxstep)
+  while (nchange > 0)
     {
       nchange = 0;
 
