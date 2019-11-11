@@ -4,7 +4,7 @@
 #include <stdarg.h>
 
 #include "percolate.h"
-#include "arralloc.h"
+//#include "arralloc.h"
 
 
 /*
@@ -104,8 +104,8 @@ int main(int argc, char *argv[])//test for Clion
   /*
    *  Cartesian topology
    */ 
-  dims[0] = 2;
-  dims[1] = 2;
+  dims[0] = 0;
+  dims[1] = 0;
   period[0] = TRUE;    // TRUE, Cyclic
   period[1] = FALSE;    // FALSE, Not Cyclic
   reorder = FALSE;      // FALSE

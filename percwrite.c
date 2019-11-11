@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 #include "percolate.h"
-#include "arralloc.h"
+//#include "arralloc.h"
 
 /*
  *  Function to write a percolation map in greyscale Portable Grey Map
