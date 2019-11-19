@@ -6,7 +6,7 @@
  *  System size L
  */
 
-#define L 288
+//#define L 288
 
 //#define P 4
 /*
@@ -34,8 +34,8 @@
  *  Visualisation
  */
 
-void percwrite(char *percfile, int map[L][L], int ncluster);
-
+//void percwrite(char *percfile, int map[L][L], int ncluster);
+void percwritedynamic(char *percfile, int **map, int l, int ncluster);
 /*
  *  Random numbers
  */

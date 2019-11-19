@@ -16,7 +16,8 @@ int main(int argc, char *argv[])//test for Clion
   /*
    *  Define the main arrays for the simulation
    */
-  int M, N;
+  int L, M, N;
+  int **map;
   int** old;
   int** new;
   int** smallmap;
@@ -28,7 +29,7 @@ int main(int argc, char *argv[])//test for Clion
    *  these two steps in serial
    */
 
-  int map[L][L];
+  //int map[L][L];
 
   /*
    *  Create a new M*N array called smallmap without any halos
@@ -51,9 +52,9 @@ int main(int argc, char *argv[])//test for Clion
   int itop, ibot, perc;
   double r;
 
-  if (argc != 2)
+  if (argc != 3)
     {
-      printf("Usage: percolate <seed>\n");
+      printf("Usage: percolate <seed> <L>\n");
       return 1;
     }
 
@@ -69,7 +70,11 @@ int main(int argc, char *argv[])//test for Clion
 
   seed = atoi(argv[1]);
 
+  L = atoi(argv[2]);
+
   printf("percolate: params are L = %d, rho = %f, seed = %d\n", L, rho, seed);
+
+  map = (int **) arralloc(sizeof(int), 2, L, L);
 
   rinit(seed);
 
@@ -426,7 +431,8 @@ int main(int argc, char *argv[])//test for Clion
    *  clusters etc.
    */
 
-    percwrite("map.pgm", map, 8);
+    //percwrite("map.pgm", map, 8);
+    percwritedynamic("map.pgm", map, L, 8);
   }
 
   MPI_Finalize();
