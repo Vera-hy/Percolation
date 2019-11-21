@@ -100,7 +100,7 @@ int main(int argc, char *argv[])//test for Clion
     percwritedynamic("map.pgm", map, L, 8);
   }
 
-  MPI_Finalize();
+  mp_stop();
 
   return 0;
 }

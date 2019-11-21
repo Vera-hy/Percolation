@@ -12,6 +12,9 @@ void mp_start(int *size){
     MPI_Comm_size(MPI_COMM_WORLD, size);
 }
 
+void mp_stop(){
+    MPI_Finalize();
+}
 /*
 *  Cartesian topology
 */
