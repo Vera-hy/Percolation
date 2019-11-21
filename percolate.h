@@ -3,13 +3,6 @@
  */
 
 /*
- *  System size L
- */
-
-//#define L 288
-
-//#define P 4
-/*
  *  Although overall system is square, i.e. size L x L, we will define
  *  different variables for the first and second dimensions. This is
  *  because, in the parallel code, the local arrays will not be
@@ -17,10 +10,6 @@
  *  processes, then M = L/P and N = L
  */
 
-//#define M L/2
-//#define N L/2
-
-//int M,N;
 
 #define TRUE  1
 #define FALSE 0
@@ -34,7 +23,6 @@
  *  Visualisation
  */
 
-//void percwrite(char *percfile, int map[L][L], int ncluster);
 void percwritedynamic(char *percfile, int **map, int l, int ncluster);
 /*
  *  Random numbers
@@ -42,5 +30,9 @@ void percwritedynamic(char *percfile, int **map, int l, int ncluster);
 
 void rinit(int ijkl);
 float uni(void);
+
+/*
+ *  Dynamic allocation
+ */
 void *arralloc(size_t size, int ndim, ...);
 

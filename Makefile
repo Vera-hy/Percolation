@@ -1,6 +1,7 @@
 MF=	Makefile
 
-CC=	mpicc
+#CC=	mpicc -cc=icc
+CC= mpicc -cc=gcc
 CFLAGS=	-O3
 LIB=	-lm
 
@@ -9,13 +10,19 @@ LFLAGS= $(CFLAGS)
 EXE=	percolate
 
 INC= \
-	percolate.h
+	percolate.h \
+	pinit_data.h    \
+	pdistri_pro.h   \
+	pupdate_squares.h
 
 SRC= \
 	percolate.c \
 	percwrite.c \
 	uni.c   \
-	arralloc.c
+	arralloc.c  \
+	pinit_data.c    \
+	pdistri_pro.c   \
+	pupdate_squares.c
 
 #
 # No need to edit below this line
@@ -29,7 +36,7 @@ OBJ=	$(SRC:.c=.o)
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-all:	$(EXE)
+percolate_para:	$(EXE)
 
 $(OBJ):	$(INC)
 
