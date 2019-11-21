@@ -16,38 +16,19 @@
 int main(int argc, char *argv[])//test for Clion
 {
   /*
-   *  Define the main arrays for the simulation
+   *  Define the arrays for the simulation
    */
-  int L, M, N;
   int** old;
   int** new;
-
-
-  /*
-   *  Additional array WITHOUT halos for initialisation and IO. This
-   *  is of size LxL because, even in our parallel program, we do
-   *  these two steps in serial
-   */
   int** map;
-
-  /*
-   *  Create a new M*N array called smallmap without any halos
-   */
   int** smallmap;
 
   /*
    *  Variables that define the simulation
    */
-
+  int L, M, N;
   int seed;
   double rho;
-
-  /*
-   *  Local variables
-   */
-
-  //int step, maxstep, oldval, newval, nchange, printfreq;
-  int itop, ibot, perc;
 
   if (argc != 3)
     {
@@ -107,30 +88,7 @@ int main(int argc, char *argv[])//test for Clion
    *  that appear on both the top and bottom edges
    */
   if(rank == 0){
-    perc = 0;
-
-    for (itop=0; itop < L; itop++)
-      {
-        if (map[itop][L-1] > 0)
-	 {
-	   for (ibot=0; ibot < L; ibot++)
-	      {
-	        if (map[itop][L-1] == map[ibot][0])
-		  {
-		    perc = 1;
-		  }
-	     }
-	 }
-     }
-
-   if (perc != 0)
-     {
-       printf("percolate: cluster DOES percolate\n");
-     }
-   else
-     {
-       printf("percolate: cluster DOES NOT percolate\n");
-      }
+   test_perc(L, map);
 
   /*
    *  Write the map to the file "map.pgm", displaying only the very
@@ -139,7 +97,6 @@ int main(int argc, char *argv[])//test for Clion
    *  clusters etc.
    */
 
-    //percwrite("map.pgm", map, 8);
     percwritedynamic("map.pgm", map, L, 8);
   }
 

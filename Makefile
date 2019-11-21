@@ -14,7 +14,8 @@ INC= \
 	pinit_data.h    \
 	pdistri_pro.h   \
 	pupdate_squares.h   \
-	pcollect_data.h
+	pcollect_data.h \
+	test_perc.h
 
 SRC= \
 	percolate.c \
@@ -24,7 +25,8 @@ SRC= \
 	pinit_data.c    \
 	pdistri_pro.c   \
 	pupdate_squares.c   \
-	pcollect_data.c
+	pcollect_data.c \
+	test_perc.c
 
 #
 # No need to edit below this line
