@@ -5,6 +5,9 @@
 
 #include "percolate.h"
 
+/*
+ *  Initialise MPI, compute the size
+ */
 void mp_start(int *size){
 
     MPI_Init(NULL, NULL);
@@ -12,14 +15,18 @@ void mp_start(int *size){
     MPI_Comm_size(MPI_COMM_WORLD, size);
 }
 
+/*
+ *  Finalize MPI, compute the size
+ */
 void mp_stop(){
     MPI_Finalize();
 }
+
 /*
-*  Cartesian topology
-*/
+ *  Cartesian topology
+ */
 void mp_cart(MPI_Comm *comm2d, int *M, int *N, int size, int L){
-// New variables required
+
     int reorder;
     int dims[ndims];
     int period[ndims];

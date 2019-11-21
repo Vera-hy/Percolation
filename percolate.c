@@ -10,10 +10,10 @@
 
 
 /*
- * Serial program to test for percolation of a cluster.
+ * Program to test for percolation of a cluster.
  */
 
-int main(int argc, char *argv[])//test for Clion
+int main(int argc, char *argv[])
 {
   /*
    *  Define the arrays for the simulation
@@ -51,36 +51,63 @@ int main(int argc, char *argv[])//test for Clion
   L = atoi(argv[2]);
 
   printf("percolate: params are L = %d, rho = %f, seed = %d\n", L, rho, seed);
-
-
-  /*
-   *  initialise MPI, compute the size and rank, and check that size = P
-   */
-
+  // New variables required
   int rank, size;
   int left,right,up,down;
   MPI_Comm comm2d;
 
+  /*
+   *  Initialise MPI, compute the size
+   */
   mp_start(&size);
+
+  /*
+   *  Cartesian topology
+   */
   mp_cart(&comm2d, &M, &N, size, L);
+
+  /*
+   *  Find 4 neighbours of every squares for halo swaps
+   */
   mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up);
 
   /*
-   *  Allocate memory
+   *  Allocate memory dynamically
    */
   map = (int **) arralloc(sizeof(int), 2, L, L);
   smallmap  = (int**)arralloc(sizeof(int), 2, M, N);
   old = (int**)arralloc(sizeof(int), 2, M + 2, N + 2);
   new = (int**)arralloc(sizeof(int), 2, M + 2, N + 2);
 
+  /*
+   *  Initialize array map by master process
+   */
   init_map(seed, rank, rho, map, L);
 
+  /*
+   *  Master process distributes array smallmap to others
+   */
   mp_scatter_pro(map, smallmap, L, comm2d, M, N, rank);
 
+  /*
+   * Initialise the old array: copy the MxN array smallmap to the centre of
+   * old, and set the halo values to zero.
+   */
   init_old(smallmap, old, M, N);
+
+  /*
+   *  Update squares until there is no change between steps
+   */
   update_squares(M, N, L, old, new, left, right, up, down, comm2d, rank);
+
+  /*
+   *  Copy the centre of old, excluding the halos, into smallmap
+   */
   final_suqares(M, N, smallmap, old);
 
+  /*
+   *  Master process collects data back into array map
+   */
   mp_collect_data(rank, smallmap, M, N, comm2d, size, map);
 
   /*
@@ -100,6 +127,9 @@ int main(int argc, char *argv[])//test for Clion
     percwritedynamic("map.pgm", map, L, 8);
   }
 
+  /*
+   *  Finalize MPI
+   */
   mp_stop();
 
   return 0;

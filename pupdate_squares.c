@@ -39,7 +39,7 @@ void init_old(int** smallmap, int** old, int M, int N){
 
 
 /*
- *  Update for a fixed number of iterations
+ *  Update squares until there is no change between steps
  */
 void update_squares(int M, int N, int L, int** old, int** new, int left, int right,
         int up, int down, MPI_Comm comm2d, int rank){

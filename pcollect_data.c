@@ -30,12 +30,6 @@ void mp_collect_data(int rank, int** smallmap, int M, int N, MPI_Comm comm2d,
         int source;
         for (source = 1; source < size; source++){
 
-            /*MPI_Cart_coords(comm2d, source, 2, coord);
-
-            int x = coord[0] * M;
-            int y = coord[1] * N;
-
-            MPI_Recv(&map[x][y], 1, rectype, source, tag, comm2d, &status);*/
             MPI_Recv(&smallmap[0][0], M*N, MPI_INT, source, tag, comm2d, &status);
 
             MPI_Cart_coords(comm2d, source, 2, coord);
