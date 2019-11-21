@@ -83,7 +83,6 @@ int main(int argc, char *argv[])//test for Clion
   mp_start(&size);
   mp_cart(&comm2d, &M, &N, size, L);
   mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up);
-  //init_arrays(map, smallmap, old, new, L, M, N);
 
   /*
    *  Allocate memory
@@ -101,55 +100,7 @@ int main(int argc, char *argv[])//test for Clion
   update_squares(M, N, L, old, new, left, right, up, down, comm2d, rank);
   final_suqares(M, N, smallmap, old);
 
-  int tag = 0;
-  MPI_Status status;
-  //MPI_Gather(&smallmap[0][0], M*N, MPI_INT, &map[0][0], M*N, MPI_INT, 0, comm);
-  //MPI_Ssend(&smallmap[0][0], M*N, MPI_INT, 0, tag, comm2d);
-  /*
-  MPI_Datatype rectype;
-  MPI_Type_vector(M,N,N,MPI_INT,&rectype);
-  MPI_Type_commit(&rectype);*/
-  int i,j;
-  if(rank != 0){
-     MPI_Ssend(&smallmap[0][0], M*N, MPI_INT, 0, tag, comm2d);
-  }else{
-
-     int coord[2];
-
-     MPI_Cart_coords(comm2d, rank, 2, coord);
-
-      int x = coord[0] * M;
-      int y = coord[1] * N;
-
-      for (i = 0; i < M; ++i) {
-          for (j = 0; j < N ; ++j) {
-             map[x+i][y+j] = smallmap[i][j];
-          }
-      }
-      int source;
-      for (source = 1; source < size; source++){
-
-          /*MPI_Cart_coords(comm2d, source, 2, coord);
-
-          int x = coord[0] * M;
-          int y = coord[1] * N;
-
-          MPI_Recv(&map[x][y], 1, rectype, source, tag, comm2d, &status);*/
-          MPI_Recv(&smallmap[0][0], M*N, MPI_INT, source, tag, comm2d, &status);
-
-          MPI_Cart_coords(comm2d, source, 2, coord);
-
-          int x = coord[0] * M;
-          int y = coord[1] * N;
-
-          for (i = 0; i < M; ++i) {
-              for (j = 0; j < N ; ++j) {
-                  map[x+i][y+j] = smallmap[i][j];
-              }
-          }
-
-      }
-  }
+  mp_collect_data(rank, smallmap, M, N, comm2d, size, map);
 
   /*
    *  Test to see if percolation occurred by looking for positive numbers
