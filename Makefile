@@ -7,9 +7,11 @@ LIB=	-lm
 
 LFLAGS= $(CFLAGS)
 
-EXE=	percolate
+PAREXE=	percolate_par
 
-INC= \
+SEQEXE= percolate_seq
+
+PARINC= \
 	percolate.h \
 	pinit_data.h    \
 	pdistri_pro.h   \
@@ -17,7 +19,10 @@ INC= \
 	pcollect_data.h \
 	test_perc.h
 
-SRC= \
+SEQINC= \
+    percolate.h
+
+PARSRC= \
 	percolate.c \
 	percwrite.c \
 	uni.c   \
@@ -28,6 +33,33 @@ SRC= \
 	pcollect_data.c \
 	test_perc.c
 
+SEQSRC= \
+    percolate.c
+
+#
+# Sequential program
+#
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+SEQOBJ=	$(SEQSRC:.c=.o)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+percolate_seq:	$(SEQEXE)
+
+$(SEQOBJ):	$(SEQINC)
+
+$(SEQEXE):	$(SEQOBJ)
+	$(CC) $(LFLAGS) -o $@ $(SEQOBJ) $(LIB)
+
+$(SEQOBJ):	$(MF)
+
+clean_seq:
+	rm -f $(SEQEXE) $(SEQOBJ) core map.pgm
+
 #
 # No need to edit below this line
 #
@@ -35,19 +67,19 @@ SRC= \
 .SUFFIXES:
 .SUFFIXES: .c .o
 
-OBJ=	$(SRC:.c=.o)
+PAROBJ=	$(PARSRC:.c=.o)
 
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+#.c.o:
+#	$(CC) $(CFLAGS) -c $<
 
-percolate_para:	$(EXE)
+percolate_p:	$(PAREXE)
 
-$(OBJ):	$(INC)
+$(PAROBJ):	$(PARINC)
 
-$(EXE):	$(OBJ)
-	$(CC) $(LFLAGS) -o $@ $(OBJ) $(LIB)
+$(PAREXE):	$(PAROBJ)
+	$(CC) $(LFLAGS) -o $@ $(PAROBJ) $(LIB)
 
-$(OBJ):	$(MF)
+$(PAROBJ):	$(MF)
 
 clean:
-	rm -f $(EXE) $(OBJ) core map.pgm
+	rm -f $(PAREXE) $(PAROBJ) core map.pgm
