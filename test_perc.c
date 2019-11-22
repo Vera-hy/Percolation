@@ -3,18 +3,22 @@
 
 #include "percolate.h"
 
-void test_perc(int L, int** map){
+/*
+ *  Test to see if percolation occurred by looking for positive numbers
+ *  that appear on both the top and bottom edges.
+ */
+void test_perc(int l, int** map){
 
     int itop, ibot, perc;
     perc = 0;
 
-    for (itop=0; itop < L; itop++)
+    for (itop=0; itop < l; itop++)
     {
-        if (map[itop][L-1] > 0)
+        if (map[itop][l-1] > 0)
         {
-            for (ibot=0; ibot < L; ibot++)
+            for (ibot=0; ibot < l; ibot++)
             {
-                if (map[itop][L-1] == map[ibot][0])
+                if (map[itop][l-1] == map[ibot][0])
                 {
                     perc = 1;
                 }

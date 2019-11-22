@@ -4,9 +4,11 @@
 #include <stdarg.h>
 
 #include "percolate.h"
-#include "pinit_data.h"
-#include "pdistri_pro.h"
-#include "pupdate_squares.h"
+
+#include "parlib.h"
+#include "mplib.h"
+
+#include "seqlib.h"
 
 
 /*
@@ -26,35 +28,32 @@ int main(int argc, char *argv[])
   /*
    *  Variables that define the simulation
    */
-  int L, M, N;
+  int l, m, n;
   int seed;
   double rho;
 
   if (argc != 3)
     {
-      printf("Usage: percolate <seed> <L>\n");
+      printf("Usage: percolate <seed> <l>\n");
       return 1;
     }
 
   /*
    *  Set most important value: the rock density rho (between 0 and 1)
    */
-
   rho = 0.411;
 
   /*
-   *  Set the randum number seed and length of the map array L
+   *  Set the random number seed and length of the map array l
    */
-
   seed = atoi(argv[1]);
 
-  L = atoi(argv[2]);
+  l = atoi(argv[2]);
 
-  printf("percolate: params are L = %d, rho = %f, seed = %d\n", L, rho, seed);
-  // New variables required
+  // Define variables for parallel program
   int rank, size;
   int left,right,up,down;
-  MPI_Comm comm2d;
+  int comm2d;
 
   /*
    *  Initialise MPI, compute the size
@@ -64,67 +63,73 @@ int main(int argc, char *argv[])
   /*
    *  Cartesian topology
    */
-  mp_cart(&comm2d, &M, &N, size, L);
+  mp_cart(&comm2d, &m, &n, size, l);
 
   /*
    *  Find 4 neighbours of every squares for halo swaps
+   *  and determines the rank of the calling process in
+   *  the communicator.
    */
   mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up);
+
+  if (rank == 0){
+      printf("percolate: params are l = %d, rho = %f, seed = %d\n", l, rho, seed);
+  }
 
   /*
    *  Allocate memory dynamically
    */
-  map = (int **) arralloc(sizeof(int), 2, L, L);
-  smallmap  = (int**)arralloc(sizeof(int), 2, M, N);
-  old = (int**)arralloc(sizeof(int), 2, M + 2, N + 2);
-  new = (int**)arralloc(sizeof(int), 2, M + 2, N + 2);
+  map = (int **) arralloc(sizeof(int), 2, l, l);
+  smallmap  = (int**)arralloc(sizeof(int), 2, m, n);
+  old = (int**)arralloc(sizeof(int), 2, m + 2, n + 2);
+  new = (int**)arralloc(sizeof(int), 2, m + 2, n + 2);
 
   /*
    *  Initialize array map by master process
    */
-  init_map(seed, rank, rho, map, L);
+  init_map(seed, rank, rho, map, l);
 
   /*
-   *  Master process distributes array smallmap to others
+   *  Master process distributes array map to others' array smallmap.
    */
-  mp_scatter_pro(map, smallmap, L, comm2d, M, N, rank);
+  mp_scatter_pro(map, smallmap, l, comm2d, m, n, rank);
 
   /*
    * Initialise the old array: copy the MxN array smallmap to the centre of
    * old, and set the halo values to zero.
    */
-  init_old(smallmap, old, M, N);
+  init_old(smallmap, old, m, n);
 
   /*
    *  Update squares until there is no change between steps
    */
-  update_squares(M, N, L, old, new, left, right, up, down, comm2d, rank);
+  update_squares(m, n, l, old, new, left, right, up, down, comm2d, rank);
 
   /*
-   *  Copy the centre of old, excluding the halos, into smallmap
+   *  Copy the centre of old, excluding the halos, back into array smallmap
    */
-  final_suqares(M, N, smallmap, old);
+  final_suqares(m, n, smallmap, old);
 
   /*
    *  Master process collects data back into array map
    */
-  mp_collect_data(rank, smallmap, M, N, comm2d, size, map);
+  mp_collect_data(rank, smallmap, m, n, comm2d, size, map);
 
+
+  if(rank == 0){
   /*
    *  Test to see if percolation occurred by looking for positive numbers
    *  that appear on both the top and bottom edges
    */
-  if(rank == 0){
-   test_perc(L, map);
+   test_perc(l, map);
 
   /*
    *  Write the map to the file "map.pgm", displaying only the very
    *  largest cluster (or multiple clusters if exactly the same size).
-   *  If the last argument here was 2, it would display the largest 2
+   *  If the last argument here was 8, it would display the largest 8
    *  clusters etc.
    */
-
-    percwritedynamic("map.pgm", map, L, 8);
+    percwritedynamic("map.pgm", map, l, 8);
   }
 
   /*

@@ -3,20 +3,15 @@
  */
 
 /*
- *  Although overall system is square, i.e. size L x L, we will define
- *  different variables for the first and second dimensions. This is
- *  because, in the parallel code, the local arrays will not be
- *  square. For example, using a simple 1D decomposition over P
- *  processes, then M = L/P and N = L
+ *  Define different variables.
  */
-
-
 #define TRUE  1
 #define FALSE 0
 #define ndims 2
 
 /*
- *  Prototypes for supplied functions
+ *  Prototypes for functions shared between parallel version and sequential
+ *  version.
  */
 
 /*
@@ -24,10 +19,10 @@
  */
 
 void percwritedynamic(char *percfile, int **map, int l, int ncluster);
+
 /*
  *  Random numbers
  */
-
 void rinit(int ijkl);
 float uni(void);
 
@@ -35,4 +30,10 @@ float uni(void);
  *  Dynamic allocation
  */
 void *arralloc(size_t size, int ndim, ...);
+
+/*
+ *  Test to see if percolation occurred by looking for positive numbers
+ *  that appear on both the top and bottom edges.
+ */
+void test_perc(int l, int** map);
 

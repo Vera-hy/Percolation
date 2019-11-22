@@ -11,9 +11,9 @@
  *  dynamically allocated, e.g. using the arralloc() routine:
  *
  *  int **map;
- *  map = (int **) arralloc(sizeof(int), 2, L, L);
+ *  map = (int **) arralloc(sizeof(int), 2, l, l);
  *  ...
- *  percwritedynamic("map.pgm", map, L, 1);
+ *  percwritedynamic("map.pgm", map, l, 1);
  */
 
 #define MAXNCLUSTER 9   // Must be able to identify by a single digit

@@ -13,31 +13,39 @@ SEQEXE= percolate_seq
 
 PARINC= \
 	percolate.h \
-	pinit_data.h    \
-	pdistri_pro.h   \
-	pupdate_squares.h   \
-	pcollect_data.h \
-	test_perc.h
+    parlib.h    \
+	mplib.h
 
 SEQINC= \
-    percolate.h
+    percolate.h \
+    seqlib.h
 
 PARSRC= \
 	percolate.c \
 	percwrite.c \
 	uni.c   \
 	arralloc.c  \
-	pinit_data.c    \
-	pdistri_pro.c   \
-	pupdate_squares.c   \
-	pcollect_data.c \
-	test_perc.c
+	par_init_data.c    \
+	par_distri_pro.c   \
+	par_update_squares.c   \
+	par_collect_data.c \
+	test_perc.c \
+	mplib.c
 
 SEQSRC= \
-    percolate.c
+    percolate.c \
+    seq_init_data.c    \
+    seq_distri_pro.c   \
+    seq_update_squares.c   \
+    seq_collect_data.c \
+    percwrite.c \
+    uni.c   \
+    arralloc.c  \
+    test_perc.c
+
 
 #
-# Sequential program
+# Sequential version
 #
 
 .SUFFIXES:
@@ -48,7 +56,7 @@ SEQOBJ=	$(SEQSRC:.c=.o)
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-percolate_seq:	$(SEQEXE)
+percolate_s:	$(SEQEXE)
 
 $(SEQOBJ):	$(SEQINC)
 
@@ -61,16 +69,13 @@ clean_seq:
 	rm -f $(SEQEXE) $(SEQOBJ) core map.pgm
 
 #
-# No need to edit below this line
+# Parallel version
 #
 
 .SUFFIXES:
 .SUFFIXES: .c .o
 
 PAROBJ=	$(PARSRC:.c=.o)
-
-#.c.o:
-#	$(CC) $(CFLAGS) -c $<
 
 percolate_p:	$(PAREXE)
 
@@ -81,5 +86,5 @@ $(PAREXE):	$(PAROBJ)
 
 $(PAROBJ):	$(MF)
 
-clean:
+clean_par:
 	rm -f $(PAREXE) $(PAROBJ) core map.pgm
