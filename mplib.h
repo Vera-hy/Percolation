@@ -68,9 +68,10 @@ void mpIssend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
               int comm, MPI_Request *request);
 
 /*
- * Waits for an MPI request to complete.
+ * Waits for all given MPI Requests to complete.
  */
-void mpWait(MPI_Request *request, MPI_Status *status);
+void mpWaitall(  int count, MPI_Request array_of_requests[],
+                 MPI_Status array_of_statuses[]);
 
 /*
  * Creates a vector datatype
@@ -88,4 +89,11 @@ void mpTypecommit(MPI_Datatype * datatype);
  * back to all processes.
  */
 void mpgsum(void *sendbuf, void *recvbuf, int count, int comm);
+
+/*
+ * Starts a non-blocking receive.
+ */
+void mpIrecv(void *recvbuf, int count, MPI_Datatype datatype, int source,
+             int tag, int comm, MPI_Request *request);
+
 #endif
