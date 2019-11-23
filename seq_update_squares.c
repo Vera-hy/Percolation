@@ -34,7 +34,7 @@ void init_old(int** smallmap, int** old, int m, int n){
  *  Update squares until there is no change between steps.
  */
 void update_squares(int m, int n, int l, int** old, int** new, int left, int right,
-                    int up, int down, int comm2d, int rank){
+                    int up, int down, int comm2d, int rank, int npro[]){
     int step, oldval, newval, nchange, printfreq,i ,j;
 
     printfreq = 100;

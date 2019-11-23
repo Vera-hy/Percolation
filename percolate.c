@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
   int rank, size;
   int left,right,up,down;
   int comm2d;
+  int npro[ndims];
 
   /*
    *  Initialise MPI, compute the size
@@ -63,16 +64,19 @@ int main(int argc, char *argv[])
   /*
    *  Cartesian topology
    */
-  mp_cart(&comm2d, &m, &n, size, l);
+  mp_cart(&comm2d, &m, &n, size, l, npro);
 
   /*
    *  Find 4 neighbours of every squares for halo swaps
    *  and determines the rank of the calling process in
    *  the communicator.
    */
-  mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up);
-
+  //mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up);
+  mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up,
+            &m, &n, npro, l);
+  //printf("rank = %d, m = %d, n = %d\n", rank, m,n);
   if (rank == 0){
+      printf("npro0 = %d, npro1 = %d\n", npro[0],npro[1]);
       printf("percolate: params are l = %d, rho = %f, seed = %d\n", l, rho, seed);
   }
 
@@ -80,9 +84,19 @@ int main(int argc, char *argv[])
    *  Allocate memory dynamically
    */
   map = (int **) arralloc(sizeof(int), 2, l, l);
-  smallmap  = (int**)arralloc(sizeof(int), 2, m, n);
-  old = (int**)arralloc(sizeof(int), 2, m + 2, n + 2);
-  new = (int**)arralloc(sizeof(int), 2, m + 2, n + 2);
+  if(rank != 0){
+      smallmap  = (int**)arralloc(sizeof(int), 2, m, n);
+      old = (int**)arralloc(sizeof(int), 2, m + 2, n + 2);
+      new = (int**)arralloc(sizeof(int), 2, m + 2, n + 2);
+  }
+  if(rank == 0){
+      int tempm = m + (l - (npro[0] * m));
+      int tempn = n + (l - (npro[1] * n));
+      smallmap  = (int**)arralloc(sizeof(int), 2, tempm, tempn);
+      old = (int**)arralloc(sizeof(int), 2, tempm + 2, tempn + 2);
+      new = (int**)arralloc(sizeof(int), 2, tempm + 2, tempn + 2);
+  }
+
 
   /*
    *  Initialize array map by master process
@@ -92,7 +106,7 @@ int main(int argc, char *argv[])
   /*
    *  Master process distributes array map to others' array smallmap.
    */
-  mp_scatter_pro(map, smallmap, l, comm2d, m, n, rank);
+  mp_scatter_pro(map, smallmap, l, comm2d, m, n, rank, npro);
 
   /*
    * Initialise the old array: copy the MxN array smallmap to the centre of
@@ -103,7 +117,7 @@ int main(int argc, char *argv[])
   /*
    *  Update squares until there is no change between steps
    */
-  update_squares(m, n, l, old, new, left, right, up, down, comm2d, rank);
+  update_squares(m, n, l, old, new, left, right, up, down, comm2d, rank, npro);
 
   /*
    *  Copy the centre of old, excluding the halos, back into array smallmap
@@ -113,7 +127,7 @@ int main(int argc, char *argv[])
   /*
    *  Master process collects data back into array map
    */
-  mp_collect_data(rank, smallmap, m, n, comm2d, size, map);
+  mp_collect_data(rank, smallmap, m, n, comm2d, size, map, npro, l);
 
 
   if(rank == 0){

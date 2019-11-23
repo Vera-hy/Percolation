@@ -7,7 +7,7 @@
  * Copy the values of map to smallmap.
  */
 void mp_scatter_pro(int** map, int** smallmap, int l,
-                    int comm2d, int m, int n, int rank){
+                    int comm2d, int m, int n, int rank, int npro[]){
     int i, j;
     for (i = 0; i < m; ++i) {
         for (j = 0; j < n ; ++j) {

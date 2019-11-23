@@ -20,22 +20,28 @@ int mp_stop(){
 /*
  * Set the value of m, n and comm2d.
  */
-void mp_cart(int *comm2d, int *m, int *n, int size, int l){
+void mp_cart(int *comm2d, int *m, int *n, int size, int l, int npro[]){
     *m = l;
     *n = l;
     *comm2d = 0;
+    npro[0] = size;
+    npro[1] = 1;
 }
 
 /*
  * Set the value of rank, left, right, up, down.
  */
-void mp_find_neighbours(int *rank, int comm2d, int *left,
-                        int *right, int *down, int *up){
+//void mp_find_neighbours(int *rank, int comm2d, int *left,
+//                        int *right, int *down, int *up){
+void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
+                        int *down, int *up, int *m, int *n, int npro[], int l){
     *rank = 0;
     *left = 0;
     *right = 0;
     *up = 0;
     *down = 0;
+    *m = l;
+    *n = l;
 }
 
 /*

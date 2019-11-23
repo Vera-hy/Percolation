@@ -7,7 +7,7 @@
 
 void calc_max(int i, int j, int *nchange, int** old, int** new);
 void overlap_swap_calc(int m, int n, int** old, int right, int left, int up,
-        int down, int comm2d, int *nchange, int** new);
+        int down, int comm2d, int *nchange, int** new, int l, int npro[], int rank);
 int calc_nchange(int nchange, int *all_nchange, int comm2d);
 int calc_avemap(int m, int n, int** old, int comm2d, int l);
 
@@ -43,7 +43,7 @@ void init_old(int** smallmap, int** old, int m, int n){
  *  Update squares until there is no change between steps.
  */
 void update_squares(int m, int n, int l, int** old, int** new, int left, int right,
-        int up, int down, int comm2d, int rank){
+        int up, int down, int comm2d, int rank, int npro[]){
 
     int step, nchange, printfreq, all_nchange, i ,j;
     //maxstep = 16*l;
@@ -65,7 +65,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
          * the halo is being sent using non-blocking routines.
          */
         overlap_swap_calc(m, n, old, right, left, up,
-                down, comm2d, &nchange, new);
+                down, comm2d, &nchange, new, l, npro, rank);
 
         /*
          * Calculations involving the halos are done
@@ -177,15 +177,24 @@ void calc_max(int i, int j, int *nchange, int** old, int** new){
 * the same time as the halo is being sent using non-blocking routines.
 */
 void overlap_swap_calc(int m, int n, int** old, int right, int left,
-        int up, int down, int comm2d, int *nchange, int** new){
+        int up, int down, int comm2d, int *nchange, int** new, int l, int npro[], int rank){
 
     MPI_Status recv_status[4], send_status[4];
     MPI_Request send_requests[4], recv_requests[4];
     int tag[4] = {1, 2, 3, 4};
 
     MPI_Datatype halo_rowtype;
-    mpVector(m, 1, n+2, MPI_INT, &halo_rowtype);
-    mpTypecommit(&halo_rowtype);
+    if(rank == 0){
+        int tempn = n + (l - (npro[1] * n));
+        //MPI_Datatype halo_rowtype;
+        mpVector(m, 1, tempn+2, MPI_INT, &halo_rowtype);
+        mpTypecommit(&halo_rowtype);
+    } else{
+        //MPI_Datatype halo_rowtype;
+        mpVector(m, 1, n+2, MPI_INT, &halo_rowtype);
+        mpTypecommit(&halo_rowtype);
+    }
+
 
     mpIssend(&old[m][1], n, MPI_INT, right, tag[0], comm2d, &send_requests[0]);
     mpIssend(&old[1][1], n, MPI_INT, left, tag[1], comm2d, &send_requests[1]);
