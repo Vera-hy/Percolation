@@ -5,7 +5,9 @@
 
 #include "percolate.h"
 
-void swap_halos(int m, int n, int** old, int right, int left, int up, int down, int comm2d);
+void calc_max(int i, int j, int *nchange, int** old, int** new);
+void swap_halos(int m, int n, int** old, int right, int left, int up,
+        int down, int comm2d, int *nchange, int** new);
 int calc_nchange(int nchange, int *all_nchange, int comm2d);
 int calc_avemap(int m, int n, int** old, int comm2d, int l);
 
@@ -43,7 +45,7 @@ void init_old(int** smallmap, int** old, int m, int n){
 void update_squares(int m, int n, int l, int** old, int** new, int left, int right,
         int up, int down, int comm2d, int rank){
 
-    int step, oldval, newval, nchange, printfreq, all_nchange,i ,j;
+    int step, nchange, printfreq, all_nchange, i ,j;
     //maxstep = 16*l;
     printfreq = 100;
 
@@ -56,32 +58,21 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
     {
         nchange = 0;
         all_nchange = 0;
-        swap_halos(m, n, old, right, left, up, down, comm2d);
-        for (i=1; i<=m; i++)
+        swap_halos(m, n, old, right, left, up, down, comm2d, &nchange, new);
+        /*for (i=1; i<=m; i++)
         {
             for (j=1; j<=n; j++)
             {
-                oldval = old[i][j];
-                newval = oldval;
-        /*
-         * Set new[i][j] to be the maximum value of old[i][j]
-         * and its four nearest neighbours
-         */
-                if (oldval != 0)
-                {
-                    if (old[i-1][j] > newval) newval = old[i-1][j];
-                    if (old[i+1][j] > newval) newval = old[i+1][j];
-                    if (old[i][j-1] > newval) newval = old[i][j-1];
-                    if (old[i][j+1] > newval) newval = old[i][j+1];
-
-                    if (newval != oldval)
-                    {
-                        ++nchange;
-                    }
-                }
-
-                new[i][j] = newval;
+                calc_max(i, j, &nchange, old, new);
             }
+        }*/
+        for (i = 1; i <= m; i++) {
+            calc_max(i, 1, &nchange, old, new);
+            calc_max(i, n, &nchange, old, new);
+        }
+        for (j = 2; j <= n-1; j++) {
+            calc_max(1, j, &nchange, old, new);
+            calc_max(m, j, &nchange, old, new);
         }
 
         /*
@@ -146,39 +137,87 @@ void final_suqares(int m, int n, int** smallmap, int** old){
         }
     }
 }
+/*
+ * Set new[i][j] to be the maximum value of old[i][j]
+ * and its four nearest neighbours
+ */
+void calc_max(int i, int j, int *nchange, int** old, int** new){
 
+    int oldval, newval;
+    oldval = old[i][j];
+    newval = oldval;
+
+    if (oldval != 0)
+    {
+        if (old[i-1][j] > newval) newval = old[i-1][j];
+        if (old[i+1][j] > newval) newval = old[i+1][j];
+        if (old[i][j-1] > newval) newval = old[i][j-1];
+        if (old[i][j+1] > newval) newval = old[i][j+1];
+
+        if (newval != oldval)
+        {
+            ++ *nchange;
+        }
+    }
+
+    new[i][j] = newval;
+
+}
 /*
  * Every process swaps halos to get correct values of halos.
  */
 void swap_halos(int m, int n, int** old, int right, int left,
-        int up, int down, int comm2d){
+        int up, int down, int comm2d, int *nchange, int** new){
 
-    MPI_Status status1,status2,status3,status4;
-    MPI_Request request1,request2,request3,request4;
-    int tag1 = 1;
-    int tag2 = 2;
-    int tag3 = 3;
-    int tag4 = 4;
+    MPI_Status recv_status[4], send_status[4];
+   // MPI_Request request1,request2,request3,request4;
+    MPI_Request send_request[4];
+    int tag[4] = {1, 2, 3, 4};
 
-    mpIssend(&old[m][1], n, MPI_INT, right, tag1, comm2d, &request1);
-    mpRecv(&old[0][1], n, MPI_INT, left, tag1, comm2d, &status1);
+    MPI_Datatype halo_rowtype;
+    mpVector(m, 1, n+2, MPI_INT, &halo_rowtype);
+    mpTypecommit(&halo_rowtype);
+
+    mpIssend(&old[m][1], n, MPI_INT, right, tag[0], comm2d, &send_request[0]);
+    mpIssend(&old[1][1], n, MPI_INT, left, tag[1], comm2d, &send_request[1]);
+    mpIssend(&old[1][n], 1, halo_rowtype, up, tag[2], comm2d, &send_request[2]);
+    mpIssend(&old[1][1], 1, halo_rowtype, down, tag[3], comm2d, &send_request[3]);
+
+    mpRecv(&old[0][1], n, MPI_INT, left, tag[0], comm2d, &recv_status[0]);
+    mpRecv(&old[m+1][1], n, MPI_INT, right, tag[1], comm2d, &recv_status[1]);
+    mpRecv(&old[1][0], 1, halo_rowtype, down, tag[2], comm2d, &recv_status[2]);
+    mpRecv(&old[1][n+1], 1, halo_rowtype, up, tag[3], comm2d, &recv_status[3]);
+
+    int i,j;
+    for (i = 2; i < m; i++) {
+        for (j = 2; j < n; j++) {
+            calc_max(i, j, nchange, old, new);
+        }
+    }
+
+    MPI_Waitall(4, send_request, send_status);
+
+/*
+    mpIssend(&old[m][1], n, MPI_INT, right, tag[0], comm2d, &request1);
+    mpRecv(&old[0][1], n, MPI_INT, left, tag[0], comm2d, &status1);
     mpWait(&request1, &status1);
 
-    mpIssend(&old[1][1], n, MPI_INT, left, tag2, comm2d, &request2);
-    mpRecv(&old[m+1][1], n, MPI_INT, right, tag2, comm2d, &status2);
+    mpIssend(&old[1][1], n, MPI_INT, left, tag[1], comm2d, &request2);
+    mpRecv(&old[m+1][1], n, MPI_INT, right, tag[1], comm2d, &status2);
     mpWait(&request2, &status2);
 
     MPI_Datatype halo_rowtype;
     mpVector(m, 1, n+2, MPI_INT, &halo_rowtype);
     mpTypecommit(&halo_rowtype);
 
-    mpIssend(&old[1][n], 1, halo_rowtype, up, tag3, comm2d, &request3);
-    mpRecv(&old[1][0], 1, halo_rowtype, down, tag3, comm2d, &status3);
+    mpIssend(&old[1][n], 1, halo_rowtype, up, tag[2], comm2d, &request3);
+    mpRecv(&old[1][0], 1, halo_rowtype, down, tag[2], comm2d, &status3);
     mpWait(&request3, &status3);
 
-    mpIssend(&old[1][1], 1, halo_rowtype, down, tag4, comm2d, &request4);
-    mpRecv(&old[1][n+1], 1, halo_rowtype, up, tag4, comm2d, &status4);
-    mpWait(&request4, &status4);
+    mpIssend(&old[1][1], 1, halo_rowtype, down, tag[3], comm2d, &request4);
+    mpRecv(&old[1][n+1], 1, halo_rowtype, up, tag[3], comm2d, &status4);
+    mpWait(&request4, &status4);*/
+
 }
 
 /*
