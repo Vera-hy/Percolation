@@ -17,18 +17,19 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
     int i,j;
 
     if(rank != 0){
-        //printf("rank = %d, m = %d, n = %d\n", rank, m, n);
+
         mpSsend(&smallmap[0][0], m*n, MPI_INT, 0, tag, comm2d);
 
     }else{
 
-        for (i = 0; i < m; ++i) {
-            for (j = 0; j < n; ++j) {
+        for (i = 0; i < m; i++) {
+            for (j = 0; j < n; j++) {
                 map[i][j] = smallmap[i][j];
             }
         }
 
         int source;
+        int tempn = n + (l - (npro[1] * n));
         for (source = 1; source < size; source++){
 
             for (j = 0; j <= npro[1] - 1; j++) {
@@ -53,43 +54,23 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
                 }
             }
 
-            printf("source = %d, m = %d, n = %d\n", source, m, n);
-           // printf("hi\n");
-            mpRecv(&smallmap[0][0], m*n, MPI_INT, source, tag, comm2d, &status);
+            MPI_Datatype vector_mn;
+            mpVector(m, n, tempn, MPI_INT, &vector_mn);
+            mpTypecommit(&vector_mn);
 
-            m = (int) floor(l / npro[0]);
-            n = (int) floor(l / npro[1]);
+            mpRecv(&smallmap[0][0], 1, vector_mn, source, tag, comm2d, &status);
+
+            int tempm = (int) floor(l / npro[0]);
+            int tempn = (int) floor(l / npro[1]);
 
             int coord[2];
             mpCartcoords(comm2d, source, coord);
 
-            int x = coord[0] * m;
-            int y = coord[1] * n;
+            int x = coord[0] * tempm;
+            int y = coord[1] * tempn;
 
-            for (j = 0; j <= npro[1] - 1; j++) {
-                int coord5[2];
-                int id5;
-                coord5[0] = npro[0] - 1;
-                coord5[1] = j;
-                MPI_Cart_rank(comm2d, coord5, &id5);
-                if (source == id5){
-                    m = m + (l - (npro[0] * m));
-                }
-            }
-
-            for (i = 0; i <= npro[0] - 1; i++) {
-                int coord6[2];
-                int id6;
-                coord6[0] = i;
-                coord6[1] = npro[1] - 1;
-                MPI_Cart_rank(comm2d, coord6, &id6);
-                if (source == id6){
-                    n = n + (l - (npro[1] * n));
-                }
-            }
-
-            for (i = 0; i < m; ++i) {
-                for (j = 0; j < n ; ++j) {
+            for (i = 0; i < m; i++) {
+                for (j = 0; j < n ; j++) {
                     map[x+i][y+j] = smallmap[i][j];
                 }
             }
