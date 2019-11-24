@@ -29,7 +29,7 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
         }
 
         int source;
-        int tempn = n + (l - (npro[1] * n));
+        int stride = n + (l - (npro[1] * n));
 
         for (source = 1; source < size; source++){
             for (j = 0; j <= npro[1] - 1; j++) {
@@ -55,7 +55,7 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
             }
 
             MPI_Datatype vector_mn;
-            mpVector(m, n, tempn, MPI_INT, &vector_mn);
+            mpVector(m, n, stride, MPI_INT, &vector_mn);
             mpTypecommit(&vector_mn);
 
             mpRecv(&smallmap[0][0], 1, vector_mn, source, tag, comm2d, &status);
@@ -74,8 +74,8 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
                     map[x+i][y+j] = smallmap[i][j];
                 }
             }
-            m = (int) floor(l / npro[0]);
-            n = (int) floor(l / npro[1]);
+            m = tempm;
+            n = tempn;
 
         }
     }
