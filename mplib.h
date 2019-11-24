@@ -96,4 +96,9 @@ void mpgsum(void *sendbuf, void *recvbuf, int count, int comm);
 void mpIrecv(void *recvbuf, int count, MPI_Datatype datatype, int source,
              int tag, int comm, MPI_Request *request);
 
+/*
+ * Determines process rank in communicator given Cartesian location.
+ */
+void mpCartrank(int comm, int *coords, int *rank);
+
 #endif

@@ -156,4 +156,13 @@ void mpIrecv(void *recvbuf, int count, MPI_Datatype datatype, int source,
 
 }
 
+/*
+ * Determines process rank in communicator given Cartesian location.
+ */
+void mpCartrank(int comm, int *coords, int *rank){
+
+    MPI_Cart_rank(comm, coords, rank);
+
+}
+
 

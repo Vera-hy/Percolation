@@ -29,6 +29,5 @@ void mp_scatter_pro(int** map, int** smallmap, int l,
             smallmap[i][j] = map[x+i][y+j];
         }
     }
-    //printf("rank = %d, m = %d, n = %d\n", rank, m,n);
 }
 

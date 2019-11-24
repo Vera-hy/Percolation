@@ -10,7 +10,7 @@
 /*
  *  Cartesian topology
  */
-void mp_cart(int *comm2d, int *m, int *n, int size, int l, int npro[]){
+void mp_cart(int *comm2d, int size, int l, int npro[]){
 
     int reorder;
     int dims[ndims];
@@ -26,18 +26,18 @@ void mp_cart(int *comm2d, int *m, int *n, int size, int l, int npro[]){
 
     npro[0] = dims[0];
     npro[1] = dims[1];
-    *m = (int) floor(l / npro[0]);
-    *n = (int) floor(l / npro[1]);
 
 }
 
 /*
- *  Find 4 neighbours of every squares for halo swaps
- *  and determines the rank of the calling process in
- *  the communicator.
+ *  Find 4 neighbours of every squares for halo swaps,
+ *  determines the rank of the calling process in
+ *  the communicator and decide the value of m and n
+ *  for array smallmap.
  */
 void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
         int *down, int *up, int *m, int *n, int npro[], int l){
+
     int directioni, directionj, disp, i, j;
     directioni = 0;       // shift along the first index
     directionj = 1;       // shift along the second index
@@ -45,12 +45,20 @@ void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
 
     mpCommrank(comm2d, rank);
 
+    *m = (int) floor(l / npro[0]);
+    *n = (int) floor(l / npro[1]);
+
+     /*
+      * When the map cannot be decomposed exactly, the last column and
+      * the last row of processes will be in charge of the remainder of
+      * squares.
+      */
     for (j = 0; j <= npro[1] - 1; j++) {
         int coord1[2];
         int id1;
         coord1[0] = npro[0] - 1;
         coord1[1] = j;
-        MPI_Cart_rank(comm2d, coord1, &id1);
+        mpCartrank(comm2d, coord1, &id1);
         if (*rank == id1){
             *m = *m + (l - (npro[0] * (*m)));
         }
@@ -61,7 +69,7 @@ void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
         int id2;
         coord2[0] = i;
         coord2[1] = npro[1] - 1;
-        MPI_Cart_rank(comm2d, coord2, &id2);
+        mpCartrank(comm2d, coord2, &id2);
         if (*rank == id2){
             *n = *n + (l - (npro[1] * (*n)));
         }

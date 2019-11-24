@@ -2,21 +2,20 @@
 #define PARLIB_H
 
 /*
- *  Prototypes for functions of parallel version.
+ *  Prototypes for functions of parallel version and sequential version.
  */
 
 /*
  *  Cartesian topology
  */
-void mp_cart(int *comm2d, int *m, int *n, int size, int l, int npro[]);
+void mp_cart(int *comm2d, int size, int l, int npro[]);
 
 /*
-  *  Find 4 neighbours of every squares for halo swaps
-  *  and determines the rank of the calling process in
-  *  the communicator.
-  */
-//void mp_find_neighbours(int *rank, int comm2d, int *left,
-//                        int *right, int *down, int *up);
+ *  Find 4 neighbours of every squares for halo swaps,
+ *  determines the rank of the calling process in
+ *  the communicator and decide the value of m and n
+ *  for array smallmap.
+ */
 void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
                         int *down, int *up, int *m, int *n, int npro[], int l);
 

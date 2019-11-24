@@ -4,7 +4,7 @@
 #include "percolate.h"
 
 /*
- * Initialise the old array: copy the MxN array smallmap to the centre of
+ * Initialise the old array: copy the mxn array smallmap to the centre of
  * old, and set the halo values to zero.
  */
 void init_old(int** smallmap, int** old, int m, int n){
@@ -115,7 +115,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
         map_average = map_sum / (l * l);
         if (step % printfreq == 0) {
             printf("percolate: the average of the map array on step %d "
-                   "is %f\n", step, map_average);
+                   "is %6.2f\n", step, map_average);
         }
 
         step++;

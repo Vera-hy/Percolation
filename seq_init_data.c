@@ -18,21 +18,17 @@ int mp_stop(){
 }
 
 /*
- * Set the value of m, n and comm2d.
+ * Set the value of comm2d and the number of processes.
  */
-void mp_cart(int *comm2d, int *m, int *n, int size, int l, int npro[]){
-    *m = l;
-    *n = l;
+void mp_cart(int *comm2d, int size, int l, int npro[]){
     *comm2d = 0;
     npro[0] = size;
     npro[1] = 1;
 }
 
 /*
- * Set the value of rank, left, right, up, down.
+ * Set the value of rank, left, right, up, down, m and n.
  */
-//void mp_find_neighbours(int *rank, int comm2d, int *left,
-//                        int *right, int *down, int *up){
 void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
                         int *down, int *up, int *m, int *n, int npro[], int l){
     *rank = 0;

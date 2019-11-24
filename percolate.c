@@ -4,7 +4,6 @@
 #include <stdarg.h>
 
 #include "percolate.h"
-
 #include "perclib.h"
 #include "mplib.h"
 
@@ -61,19 +60,19 @@ int main(int argc, char *argv[])
   /*
    *  Cartesian topology
    */
-  mp_cart(&comm2d, &m, &n, size, l, npro);
+  mp_cart(&comm2d, size, l, npro);
 
   /*
-   *  Find 4 neighbours of every squares for halo swaps
-   *  and determines the rank of the calling process in
-   *  the communicator.
+   *  Find 4 neighbours of every squares for halo swaps,
+   *  determines the rank of the calling process in
+   *  the communicator and decide the value of m and n
+   *  for array smallmap.
    */
-  //mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up);
   mp_find_neighbours(&rank, comm2d, &left, &right, &down, &up,
             &m, &n, npro, l);
-  //printf("rank = %d, m = %d, n = %d\n", rank, m,n);
+
   if (rank == 0){
-      printf("npro0 = %d, npro1 = %d\n", npro[0],npro[1]);
+      printf("percolate: number of process in first dimension is %d, in second dimension %d\n", npro[0],npro[1]);
       printf("percolate: params are l = %d, rho = %f, seed = %d\n", l, rho, seed);
   }
 
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])
   mp_scatter_pro(map, smallmap, l, comm2d, m, n, rank, npro);
 
   /*
-   * Initialise the old array: copy the MxN array smallmap to the centre of
+   * Initialise the old array: copy the mxn array smallmap to the centre of
    * old, and set the halo values to zero.
    */
   init_old(smallmap, old, m, n);

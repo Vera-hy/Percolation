@@ -30,14 +30,14 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
 
         int source;
         int tempn = n + (l - (npro[1] * n));
-        for (source = 1; source < size; source++){
 
+        for (source = 1; source < size; source++){
             for (j = 0; j <= npro[1] - 1; j++) {
                 int coord1[2];
                 int id1;
                 coord1[0] = npro[0] - 1;
                 coord1[1] = j;
-                MPI_Cart_rank(comm2d, coord1, &id1);
+                mpCartrank(comm2d, coord1, &id1);
                 if (source == id1){
                     m = m + (l - (npro[0] * m));
                 }
@@ -48,7 +48,7 @@ void mp_collect_data(int rank, int** smallmap, int m, int n, int comm2d,
                 int id2;
                 coord2[0] = i;
                 coord2[1] = npro[1] - 1;
-                MPI_Cart_rank(comm2d, coord2, &id2);
+               mpCartrank(comm2d, coord2, &id2);
                 if (source == id2){
                     n = n + (l - (npro[1] * n));
                 }

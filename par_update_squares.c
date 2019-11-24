@@ -6,13 +6,16 @@
 #include "percolate.h"
 
 void calc_max(int i, int j, int *nchange, int** old, int** new);
+
 void overlap_swap_calc(int m, int n, int** old, int right, int left, int up,
         int down, int comm2d, int *nchange, int** new, int l, int npro[], int rank);
+
 int calc_nchange(int nchange, int *all_nchange, int comm2d);
+
 int calc_avemap(int m, int n, int** old, int comm2d, int l);
 
 /*
- * Initialise the old array: copy the MxN array smallmap to the centre of
+ * Initialise the old array: copy the mxn array smallmap to the centre of
  * old, and set the halo values to zero.
  */
 void init_old(int** smallmap, int** old, int m, int n){
@@ -92,6 +95,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
                        step, all_nchange);
             }
         }
+
         /*
          *  Copy back in preparation for next step, omitting halos
          */
@@ -102,6 +106,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
                 old[i][j] = new[i][j];
             }
         }
+
         /*
          * Calculate and print out the average value of array map in each step.
          */
@@ -111,7 +116,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
         if( rank == 0) {
             if (step % printfreq == 0) {
                 printf("percolate: the average of the map array on step %d "
-                       "is %f\n", step, map_average);
+                       "is %6.2f\n", step, map_average);
             }
         }
 
@@ -131,6 +136,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
                maxstep);
     }*/
 }
+
 /*
  *  Copy the centre of old, excluding the halos, back into smallmap.
  */
@@ -145,9 +151,10 @@ void final_suqares(int m, int n, int** smallmap, int** old){
         }
     }
 }
+
 /*
  * Set new[i][j] to be the maximum value of old[i][j]
- * and its four nearest neighbours
+ * and its four nearest neighbours.
  */
 void calc_max(int i, int j, int *nchange, int** old, int** new){
 
@@ -186,15 +193,12 @@ void overlap_swap_calc(int m, int n, int** old, int right, int left,
     MPI_Datatype halo_rowtype;
     if(rank == 0){
         int tempn = n + (l - (npro[1] * n));
-        //MPI_Datatype halo_rowtype;
         mpVector(m, 1, tempn+2, MPI_INT, &halo_rowtype);
         mpTypecommit(&halo_rowtype);
     } else{
-        //MPI_Datatype halo_rowtype;
         mpVector(m, 1, n+2, MPI_INT, &halo_rowtype);
         mpTypecommit(&halo_rowtype);
     }
-
 
     mpIssend(&old[m][1], n, MPI_INT, right, tag[0], comm2d, &send_requests[0]);
     mpIssend(&old[1][1], n, MPI_INT, left, tag[1], comm2d, &send_requests[1]);
