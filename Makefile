@@ -13,12 +13,12 @@ SEQEXE= percolate_seq
 
 PARINC= \
 	percolate.h \
-    parlib.h    \
+    perclib.h    \
 	mplib.h
 
 SEQINC= \
     percolate.h \
-    seqlib.h
+    perclib.h
 
 PARSRC= \
 	percolate.c \

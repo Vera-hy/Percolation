@@ -5,11 +5,8 @@
 
 #include "percolate.h"
 
-#include "parlib.h"
+#include "perclib.h"
 #include "mplib.h"
-
-#include "seqlib.h"
-
 
 /*
  * Program to test for percolation of a cluster.
