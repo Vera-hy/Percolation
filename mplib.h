@@ -101,4 +101,9 @@ void mpIrecv(void *recvbuf, int count, MPI_Datatype datatype, int source,
  */
 void mpCartrank(int comm, int *coords, int *rank);
 
+/*
+ * Returns an elapsed time on the calling processor.
+ */
+double gettime(void);
+
 #endif

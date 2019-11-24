@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpi.h>
 
 #include "percolate.h"
 
@@ -35,12 +36,15 @@ void init_old(int** smallmap, int** old, int m, int n){
  */
 void update_squares(int m, int n, int l, int** old, int** new, int left, int right,
                     int up, int down, int comm2d, int rank, int npro[]){
+
     int step, oldval, newval, nchange, printfreq,i ,j;
+    double tstart, tstop;
 
     printfreq = 100;
     step = 1;
     nchange = 1;
 
+    tstart = MPI_Wtime();
     while (nchange > 0)
     {
         nchange = 0;
@@ -120,6 +124,9 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
 
         step++;
     }
+    tstop = MPI_Wtime();
+    printf("\nAverage time taken per step was  %f seconds\n", (tstop-tstart)/step);
+
 }
 
 /*

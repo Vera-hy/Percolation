@@ -165,4 +165,10 @@ void mpCartrank(int comm, int *coords, int *rank){
 
 }
 
-
+/*
+ * Returns an elapsed time on the calling processor.
+ */
+double gettime(void)
+{
+    return MPI_Wtime();
+}

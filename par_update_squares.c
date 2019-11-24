@@ -49,6 +49,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
         int up, int down, int comm2d, int rank, int npro[]){
 
     int step, nchange, printfreq, all_nchange, i ,j;
+    double tstart, tstop;
     //maxstep = 16*l;
     printfreq = 100;
 
@@ -56,6 +57,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
     nchange = 1;
     all_nchange = 1;
 
+    tstart = gettime();
     //while (step <= maxstep)
     while (all_nchange > 0)
     {
@@ -121,6 +123,12 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
         }
 
         step++;
+    }
+
+    tstop = gettime();
+
+    if(rank == 0){
+        printf("\nAverage time taken per step was  %f seconds\n", (tstop-tstart)/step);
     }
 
         /*
