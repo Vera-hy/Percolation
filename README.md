@@ -138,7 +138,7 @@ $ qsub percolate.pbs
 ```
 Before the qsub, please modify the content in the percolate.pbs to set account value and parameters.
 
-**View the Output of map.pgm **:
+**View the Output of map.pgm**:
 ```
 $ display map.pgm
 ```
