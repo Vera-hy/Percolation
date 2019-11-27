@@ -7,12 +7,12 @@
  */
 
 /*
- *  Initialise MPI and compute the size
+ *  Initialise MPI and compute the size.
  */
 void mp_start(int *size);
 
 /*
- *  Finalize MPI
+ *  Finalize MPI.
  */
 int mp_stop();
 
@@ -23,7 +23,7 @@ void mpSsend(void *sendbuf, int count, MPI_Datatype datatype, int dest,
              int tag, int comm);
 
 /*
- * Determines process coords in cartesian topology given rank in group.
+ * Determine process coords in cartesian topology given rank in group.
  */
 void mpCartcoords(int comm, int rank, int *coord);
 
@@ -34,75 +34,75 @@ void mpRecv(void *recvbuf, int count, MPI_Datatype datatype, int source,
             int tag, int comm, MPI_Status *status);
 
 /*
- * Broadcasts a message from the process with
+ * Broadcast a message from the process with
  * rank "0" to all other processes of the communicator.
  */
 void mpBcast(void *buffer, int count, int comm);
 
 /*
- * Creates a division of processors in a cartesian grid.
+ * Create a division of processors in a cartesian grid.
  */
 void mpDimscreate(int nnodes, int *dims);
 
 /*
- * Makes a new communicator to which topology information has been attached.
+ * Make a new communicator to which topology information has been attached.
  */
 void mpCartcreate(int *dims, int *period, int reorder, int *comm);
 
 /*
- * Determines the rank of the calling process in the communicator.
+ * Determine the rank of the calling process in the communicator.
  */
 void mpCommrank(int comm, int *rank);
 
 /*
- * Returns the shifted source and destination ranks,
+ * Return the shifted source and destination ranks,
  * given a shift direction and amount.
  */
 void mpCartshift(int comm, int direction, int disp, int *source,
                  int *dest );
 
 /*
- * Starts a non-blocking synchronous send.
+ * Start a non-blocking synchronous send.
  */
 void mpIssend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
               int comm, MPI_Request *request);
 
 /*
- * Waits for all given MPI Requests to complete.
+ * Wait for all given MPI Requests to complete.
  */
 void mpWaitall(  int count, MPI_Request array_of_requests[],
                  MPI_Status array_of_statuses[]);
 
 /*
- * Creates a vector datatype
+ * Create a vector datatype
  */
 void mpVector(int count, int blocklength,int stride, MPI_Datatype oldtype,
               MPI_Datatype *newtype);
 
 /*
- * Commits the datatype
+ * Commit the datatype
  */
 void mpTypecommit(MPI_Datatype * datatype);
 
 /*
- * Combines values from all processes and distributes the result
+ * Combine values from all processes and distributes the result
  * back to all processes.
  */
 void mpgsum(void *sendbuf, void *recvbuf, int count, int comm);
 
 /*
- * Starts a non-blocking receive.
+ * Start a non-blocking receive.
  */
 void mpIrecv(void *recvbuf, int count, MPI_Datatype datatype, int source,
              int tag, int comm, MPI_Request *request);
 
 /*
- * Determines process rank in communicator given Cartesian location.
+ * Determine process rank in communicator given Cartesian location.
  */
 void mpCartrank(int comm, int *coords, int *rank);
 
 /*
- * Returns an elapsed time on the calling processor.
+ * Return an elapsed time on the calling processor.
  */
 double gettime(void);
 

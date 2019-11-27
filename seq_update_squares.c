@@ -125,7 +125,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
         step++;
     }
     tstop = MPI_Wtime();
-    printf("\nAverage time taken per step was  %f seconds\n", (tstop-tstart)/step);
+    printf("\nTime taken in sequential code in %d steps was %f seconds\n", step, tstop-tstart);
 
 }
 

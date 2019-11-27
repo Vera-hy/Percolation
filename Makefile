@@ -1,7 +1,7 @@
 MF=	Makefile
 
-#CC=	mpicc -cc=icc
-CC= mpicc -cc=gcc
+CC=	mpicc -cc=icc
+#CC= mpicc -cc=gcc
 CFLAGS=	-O3
 LIB=	-lm
 
@@ -87,4 +87,4 @@ $(PAREXE):	$(PAROBJ)
 $(PAROBJ):	$(MF)
 
 clean_par:
-	rm -f $(PAREXE) $(PAROBJ) core map.pgm
+	rm -f $(PAREXE) $(PAROBJ) core map.pgm myjob*.o*

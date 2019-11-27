@@ -50,8 +50,8 @@ void mp_find_neighbours(int *rank, int comm2d, int *left, int *right,
 
      /*
       * When the map cannot be decomposed exactly, the last column and
-      * the last row of processes will be in charge of the remainder of
-      * squares.
+      * the last row of the cartesian topology for processes will be
+      * in charge of the remainder of squares.
       */
     for (j = 0; j <= npro[1] - 1; j++) {
         int coord1[2];

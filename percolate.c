@@ -13,6 +13,7 @@
 
 int main(int argc, char *argv[])
 {
+    double start,stop;
   /*
    *  Define the arrays for the simulation
    */
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
             &m, &n, npro, l);
 
   if (rank == 0){
-      printf("percolate: number of process in first dimension is %d, in second dimension %d\n", npro[0],npro[1]);
+      printf("percolate: the number of processes on first dimension is %d, on second dimension is %d\n", npro[0],npro[1]);
       printf("percolate: params are l = %d, rho = %f, seed = %d\n", l, rho, seed);
   }
 
@@ -111,7 +112,7 @@ int main(int argc, char *argv[])
   init_old(smallmap, old, m, n);
 
   /*
-   *  Update squares until there is no change between steps
+   *  Update squares until there is no change between steps.
    */
   update_squares(m, n, l, old, new, left, right, up, down, comm2d, rank, npro);
 
@@ -121,7 +122,7 @@ int main(int argc, char *argv[])
   final_suqares(m, n, smallmap, old);
 
   /*
-   *  Master process collects data back into array map
+   *  Master process collects data back into array map.
    */
   mp_collect_data(rank, smallmap, m, n, comm2d, size, map, npro, l);
 
@@ -129,13 +130,12 @@ int main(int argc, char *argv[])
   if(rank == 0){
   /*
    *  Test to see if percolation occurred by looking for positive numbers
-   *  that appear on both the top and bottom edges
+   *  that appear on both the top and bottom edges.
    */
    test_perc(l, map);
 
   /*
-   *  Write the map to the file "map.pgm", displaying only the very
-   *  largest cluster (or multiple clusters if exactly the same size).
+   *  Write the map to the file "map.pgm".
    *  If the last argument here was 8, it would display the largest 8
    *  clusters etc.
    */

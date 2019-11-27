@@ -4,6 +4,7 @@
 #include <stdarg.h>
 
 #include "percolate.h"
+#include "mplib.h"
 
 void calc_max(int i, int j, int *nchange, int** old, int** new);
 
@@ -50,7 +51,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
 
     int step, nchange, printfreq, all_nchange, i ,j;
     double tstart, tstop;
-    //maxstep = 16*l;
+    //int maxstep = 40000;
     printfreq = 100;
 
     step = 1;
@@ -128,7 +129,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
     tstop = gettime();
 
     if(rank == 0){
-        printf("\nAverage time taken per step was  %f seconds\n", (tstop-tstart)/step);
+        printf("\npercolate: parallel time taken in %d steps was %f seconds\n", step, tstop-tstart);
     }
 
         /*
