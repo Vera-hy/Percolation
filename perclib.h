@@ -45,7 +45,7 @@ int up, int down, int comm2d, int rank, int npro[]);
 /*
  *  Copy the centre of old, excluding the halos, back into smallmap.
  */
-void final_suqares(int m, int n, int** smallmap, int** old);
+void final_squares(int m, int n, int** smallmap, int** old);
 
 /*
  *  Master process collects data back into array map.

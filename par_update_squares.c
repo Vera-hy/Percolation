@@ -149,7 +149,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
 /*
  *  Copy the centre of old, excluding the halos, back into smallmap.
  */
-void final_suqares(int m, int n, int** smallmap, int** old){
+void final_squares(int m, int n, int** smallmap, int** old){
 
     int i, j;
     for (i=1; i<=m; i++)

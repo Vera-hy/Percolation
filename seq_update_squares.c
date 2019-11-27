@@ -132,7 +132,7 @@ void update_squares(int m, int n, int l, int** old, int** new, int left, int rig
 /*
  * Copy the value of of array old back into the array smallmap.
  */
-void final_suqares(int m, int n, int** smallmap, int** old){
+void final_squares(int m, int n, int** smallmap, int** old){
 
     int i, j;
     for (i=1; i<=m; i++)

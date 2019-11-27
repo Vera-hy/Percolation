@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
   /*
    *  Copy the centre of old, excluding the halos, back into array smallmap
    */
-  final_suqares(m, n, smallmap, old);
+  final_squares(m, n, smallmap, old);
 
   /*
    *  Master process collects data back into array map.

@@ -18,16 +18,23 @@ Description of the Structure of the Code
 2. Sequential Source Files
 
 		seq_init_data.c
+        
 		seq_distri_pro.c
+        
 		seq_update_squares.c
+        
 		seq_collect_data.c
 
 3. Source Files Shared between Parallel Version and Sequential Version
 
 		arralloc.c
+        
 		percolate.c
+        
 		percwrite.c
+        
 		test_perc.c
+        
 		uni.c
 
 **Header Files**:
@@ -92,6 +99,12 @@ $ unzip MPP1920-B155696-Coursework.zip
 $ cd MPP1920-B155696-Coursework
 ```
 
+**Load Modules**:
+```
+$ module load mpt
+$ module load intel-compilers-18
+```
+
 **Build the parallel version**:
 ```
 $ make percolate_p
@@ -102,14 +115,6 @@ $ make percolate_p
 $ make percolate_s
 ```
 
-**Remove any auto-generated files created during compilation, linking or running of source code**:
-```
-$ make clean_par
-```
-
-```
-$ make clean_seq
-```
 You can run the source program on cirrus as follows:
 -------------
 
@@ -133,6 +138,20 @@ $ qsub percolate.pbs
 ```
 Before the qsub, please modify the content in the percolate.pbs to set account value and parameters.
 
+**View the Output of map.pgm **:
+```
+$ display map.pgm
+```
+**Remove any auto-generated files created during compilation, linking or running of source code**:
+```
+$ make clean_par
+```
+
+```
+$ make clean_seq
+```
+
 Note:
 -------------
-This program can run with any number of processors.
+This program has solved the problem of uneven division of the grid size,
+so there is no restriction on the running of the code.
